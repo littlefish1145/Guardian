@@ -1135,7 +1135,7 @@ make clean
 
 ```bash
 # 1. 克隆仓库
-git clone https://github.com/your-org/guardian.git
+git clone https://github.com/littlefish1145/guardian.git
 cd guardian
 
 # 2. 安装 Go 依赖
@@ -1190,7 +1190,7 @@ go tool cover -html=coverage.out
 
 ### 如何贡献
 
-1. 查看 [Issues](https://github.com/your-org/guardian/issues) 寻找可以帮忙的问题
+1. 查看 [Issues](https://github.com/littlefish/guardian/issues) 寻找可以帮忙的问题
 2. Fork 仓库并创建分支
 3. 实现功能或修复 bug
 4. 添加测试确保质量
@@ -1198,9 +1198,7 @@ go tool cover -html=coverage.out
 
 ### 贡献者权益
 
-- 在 README 中列出贡献者名单
-- 参与项目决策讨论
-- 获得社区认可
+还没有喵...只有我一个开发喵...
 
 ## 📄 License
 
@@ -1216,9 +1214,9 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 ## 📞 联系方式
 
-- **Issues**: [GitHub Issues](https://github.com/your-org/guardian/issues)
-- **Email**: your-email@example.com
-- **Discussion**: [GitHub Discussions](https://github.com/your-org/guardian/discussions)
+- **Issues**: [GitHub Issues](https://github.com/littlefish1145/guardian/issues)
+- **Email**: 3951168381@qq.com
+- **Discussion**: [GitHub Discussions](https://github.com/littlefish1145/guardian/discussions)
 
 ## 🔮 路线图
 
@@ -1245,9 +1243,9 @@ MIT License - 详见 [LICENSE](LICENSE) 文件
 
 <div align="center">
 
-**Made with ❤️ by the Guardian Team**
+**Made with ❤️ by the Kimu**
 
-如果这个项目对你有帮助，请考虑给我们一个 ⭐️ Star！
+如果这个项目对你有帮助，请考虑给我一个 ⭐️ Star！球球了喵~
 
 [返回顶部](#guardian)
 
