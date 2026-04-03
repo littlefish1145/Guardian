@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![Guardian Logo](logo.png)
+![Guardian Logo](./logo.png)
 
 **云原生轻量级进程守护程序，专为容器环境设计**
 
