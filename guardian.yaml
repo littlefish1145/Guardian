@@ -1,0 +1,68 @@
+global:
+  log_level: info
+  metrics_port: 9090
+  api_port: 8080
+  log_dir: /var/log/guardian
+  max_log_size_mb: 100
+  max_log_backups: 5
+  debug: true
+
+processes:
+  - name: web-server
+    command: ["/usr/sbin/nginx", "-g", "daemon off;"]
+    working_dir: /usr/share/nginx/html
+
+    resources:
+      memory_limit: 512MB
+      cpu_quota: "100%"
+      nofile: 65535
+
+    health_check:
+      type: http
+      endpoint: http://localhost:80/healthz
+      interval: 10s
+      timeout: 3s
+      failure_threshold: 3
+
+    restart_policy:
+      policy: on-failure
+      max_restarts: 5
+      zombie_max_restarts: 3
+      zombie_check_enabled: true
+
+    logging:
+      stdout: true
+      stderr: true
+      file: /var/log/guardian/web.log
+      max_size_mb: 100
+      max_backups: 5
+      compress: true
+
+  - name: zombie-test
+    command: ["/bin/sh", "-c", "python3 -c '
+import os, time, sys
+pid = os.fork()
+if pid == 0:
+    # 子进程：打印 PID 后立即退出
+    print(f\"Zombie child PID: {os.getpid()}\")
+    sys.stdout.flush()
+    os._exit(0)
+else:
+    # 父进程：打印子进程 PID 并睡眠，不调用 wait()
+    print(f\"Parent PID: {os.getpid()}, Child will be zombie: {pid}\")
+    sys.stdout.flush()
+    time.sleep(60)
+'"]
+    
+    health_check:
+      type: http
+      endpoint: http://localhost:80/healthz
+      interval: 10s
+      timeout: 3s
+      failure_threshold: -1  # -1 means unlimited, no restart on health check failure
+    
+    restart_policy:
+      policy: on-failure
+      max_restarts: 5
+      zombie_max_restarts: 2
+      zombie_check_enabled: true
