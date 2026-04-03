@@ -2,6 +2,8 @@
 
 <div align="center">
 
+![Guardian Logo](logo.png)
+
 **云原生轻量级进程守护程序，专为容器环境设计**
 
 [![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat&logo=go)](https://go.dev/)
@@ -623,7 +625,7 @@ docker run --rm -it \
 ```
 
 ## ☸️ Kubernetes 使用
-
+### K8S我们建议使用原生的 init 容器或 sidecar，当然，您仍可以使用 Guardian 来管理您的应用进程。
 Guardian 可作为 init 容器或 sidecar：
 
 ### 作为 Init 容器
