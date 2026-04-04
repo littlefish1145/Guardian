@@ -5,15 +5,19 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o guardian ./cmd/guardian/
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags="-s -w -X main.Version=latest" -o guardian ./cmd/guardian/
 
-FROM nginx:alpine
+FROM alpine:3.19
 
-COPY --from=builder /build/guardian /usr/local/bin/
-COPY --from=builder /build/guardian.yaml /etc/guardian/guardian.yaml
+RUN apk --no-cache add ca-certificates && \
+    mkdir -p /var/log/guardian /app
 
-# RUN apk add --no-cache openrc docker-cli python3
-# RUN apk add --no-cache python3
-EXPOSE 9090
+COPY --from=builder /build/guardian /usr/local/bin/guardian
+COPY guardian.minimal.yaml /etc/guardian/guardian.yaml
 
-ENTRYPOINT ["/usr/local/bin/guardian", "-config", "/etc/guardian/guardian.yaml"]
+EXPOSE 8080 9090
+
+WORKDIR /app
+
+ENTRYPOINT ["/usr/local/bin/guardian"]
+CMD ["-config", "/etc/guardian/guardian.yaml"]

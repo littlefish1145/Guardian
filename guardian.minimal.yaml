@@ -1,0 +1,25 @@
+global:
+  log_level: info
+  metrics_port: 9090
+  api_port: 8080
+  log_dir: /var/log/guardian
+  max_log_size_mb: 100
+  max_log_backups: 3
+  debug: false
+
+processes:
+  - name: sample-app
+    command: ["sleep", "infinity"]
+    working_dir: /app
+
+    resources:
+      memory_limit: 256MB
+      cpu_quota: "50%"
+
+    restart_policy:
+      policy: always
+      max_restarts: 3
+
+    logging:
+      stdout: true
+      stderr: true

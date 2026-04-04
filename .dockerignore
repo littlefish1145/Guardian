@@ -1,0 +1,47 @@
+# Binaries
+guardian
+*.exe
+*.dylib
+
+# Build output
+dist/
+build/
+bin/
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage.out
+coverage.html
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Docker
+Dockerfile
+.dockerignore
+
+# Documentation
+*.md
+!README.md
+
+# Config examples
+guardian.yaml
+
+# Dependencies
+vendor/
