@@ -1,9 +1,13 @@
 package config
 
 import (
+	"context"
 	"os"
+	"path/filepath"
+	"sync/atomic"
 	"time"
 
+	"github.com/fsnotify/fsnotify"
 	"gopkg.in/yaml.v3"
 )
 
@@ -21,14 +25,14 @@ type Config struct {
 }
 
 type ProcessConfig struct {
-	Name          string        `yaml:"name"`
-	Command       []string      `yaml:"command"`
-	WorkingDir    string        `yaml:"working_dir"`
-	HealthCheck   HealthCheck   `yaml:"health_check"`
-	RestartPolicy RestartPolicy `yaml:"restart_policy"`
+	Name          string         `yaml:"name"`
+	Command       []string       `yaml:"command"`
+	WorkingDir    string         `yaml:"working_dir"`
+	HealthCheck   HealthCheck    `yaml:"health_check"`
+	RestartPolicy RestartPolicy  `yaml:"restart_policy"`
 	Resources     ResourceLimits `yaml:"resources"`
-	Logging       LoggingConfig `yaml:"logging"`
-	DependsOn     []string      `yaml:"depends_on"`
+	Logging       LoggingConfig  `yaml:"logging"`
+	DependsOn     []string       `yaml:"depends_on"`
 }
 
 type HealthCheck struct {
@@ -55,15 +59,47 @@ type ResourceLimits struct {
 }
 
 type LoggingConfig struct {
-	Stdout    bool   `yaml:"stdout"`
-	Stderr    bool   `yaml:"stderr"`
-	File      string `yaml:"file"`
-	MaxSizeMB int    `yaml:"max_size_mb"`
-	MaxBackups int   `yaml:"max_backups"`
-	Compress  bool   `yaml:"compress"`
+	Stdout     bool   `yaml:"stdout"`
+	Stderr     bool   `yaml:"stderr"`
+	File       string `yaml:"file"`
+	MaxSizeMB  int    `yaml:"max_size_mb"`
+	MaxBackups int    `yaml:"max_backups"`
+	Compress   bool   `yaml:"compress"`
 }
 
-func Load(path string) (*Config, error) {
+var current atomic.Pointer[Config]
+
+func Get() *Config { return current.Load() }
+
+func Watch(ctx context.Context, path string) error {
+	if _, err := load(path); err != nil {
+		return err
+	}
+
+	w, _ := fsnotify.NewWatcher()
+	defer w.Close()
+	w.Add(filepath.Dir(path))
+
+	var t *time.Timer
+	for {
+		select {
+		case <-ctx.Done():
+			return nil
+		case e := <-w.Events:
+			if filepath.Base(e.Name) == filepath.Base(path) && (e.Has(fsnotify.Write) || e.Has(fsnotify.Create)) {
+				if t != nil {
+					t.Stop()
+				}
+				t = time.AfterFunc(300*time.Millisecond, func() {
+					if _, err := load(path); err != nil {
+					}
+				})
+			}
+		}
+	}
+}
+
+func load(path string) (*Config, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err

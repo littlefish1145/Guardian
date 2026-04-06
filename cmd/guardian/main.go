@@ -21,11 +21,16 @@ func main() {
 	sysLogger := log.NewSystemLogger()
 	sysLogger.Info("Guardian process manager starting...")
 
-	cfg, err := config.Load(*configPath)
-	if err != nil {
-		sysLogger.Error("Failed to load config: %v", err)
-		os.Exit(1)
-	}
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	go config.Watch(ctx, *configPath)
+
+	cfg := config.Get()
+	// if err != nil {
+	// 	sysLogger.Error("Failed to load config: %v", err)
+	// 	os.Exit(1)
+	// }
 
 	logEngine, err := log.NewEngine(cfg.Global.LogDir, cfg.Global.MaxLogSizeMB, cfg.Global.MaxLogBackups, true)
 	if err != nil {
